@@ -91,7 +91,10 @@
 # define YYERROR_VERBOSE 0
 #endif
 
-
+/* In a future release of Bison, this section will be replaced
+   by #include "fb1-5.tab.h".  */
+#ifndef YY_YY_FB1_5_TAB_H_INCLUDED
+# define YY_YY_FB1_5_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -127,7 +130,7 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-
+#endif /* !YY_YY_FB1_5_TAB_H_INCLUDED  */
 
 
 
@@ -1203,41 +1206,41 @@ yyreduce:
         case 3:
 #line 15 "fb1-5.y" /* yacc.c:1652  */
     { printf("= %d\n", yyvsp[-1]); }
-#line 1207 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1210 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
   case 5:
 #line 19 "fb1-5.y" /* yacc.c:1652  */
     { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1213 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1216 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
   case 6:
 #line 20 "fb1-5.y" /* yacc.c:1652  */
     { yyval = yyvsp[-2] - yyvsp[0]; }
-#line 1219 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1222 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
   case 8:
 #line 24 "fb1-5.y" /* yacc.c:1652  */
     { yyval = yyvsp[-2] * yyvsp[0]; }
-#line 1225 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1228 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
   case 9:
 #line 25 "fb1-5.y" /* yacc.c:1652  */
     { yyval = yyvsp[-2] / yyvsp[0]; }
-#line 1231 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1234 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
   case 11:
 #line 29 "fb1-5.y" /* yacc.c:1652  */
     { yyval = yyvsp[0] >= 0 ? yyvsp[0] : -yyvsp[0]; }
-#line 1237 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1240 "fb1-5.tab.c" /* yacc.c:1652  */
     break;
 
 
-#line 1241 "fb1-5.tab.c" /* yacc.c:1652  */
+#line 1244 "fb1-5.tab.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
