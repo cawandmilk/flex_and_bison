@@ -379,5 +379,60 @@ static double calluser(struct ufncall *f)
 		return 0;
 	}
 
+	/* count the arguments */
+	sl = fn->syms;
+	for(nargs = 0; sl; sl = sl->next)
+	{
+		nargs++;
+	}
 
+	/* prepare to save them */
+	oldval = (double *)malloc(nargs * sizeof(double));
+	newval = (double *)malloc(nargs * sizeof(double));
+	if(!oldval || !newval)
+	{
+		yyerror("Out of space in %s", fn->name);
+		return 0.0;
+	}
+
+	/*evaluate the arguments */
+	for(i = 0; i < nargs; i++)
+	{
+		if(!args)
+		{
+			yyerror("too few args in call to %s", fn->name);
+			free(oldval); free(newval);
+			return 0.0;
+		}
+		
+		if(args->nodetype == 'L')	/* if this is a list node */
+		{
+			newval[i] = eval(args->l);
+			args = args->r;
+		}
+		else						/* if it's the end of the list */
+		{
+			newval[i] = eval(args);
+			args = NULL;
+		}
+	}
+
+	free(newval);
+
+	/* evaluate the function */
+	v = eval(fn->func);
+
+	/* put the real vlues of the dummies back */
+	sl = fn->syms;
+	for(i = 0; i < nargs; i++)
+	{
+		struct symbol *s = sl->sym;
+
+		s->value = oldval[i];
+		sl = sl->next;
+	}
+
+	free(oldval);
+	return v;
+}
 
