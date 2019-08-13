@@ -26,7 +26,7 @@ static unsigned symhash(char *sym)
 
 struct symbol *lookup(char *sym)
 {
-	struct symbol *sp = &systab[symhash(sym) % NHASH];
+	struct symbol *sp = &symtab[symhash(sym) % NHASH];
 	int scount = NHASH;		/* how many have we looked at */
 
 	while(--scount >= 0)
@@ -76,7 +76,7 @@ struct ast *newnum(double d)
 
 	if(!a)
 	{
-		out of space");
+		yyerror("out of space");
 		exit(0);
 	}
 	a->nodetype = 'K';
@@ -128,7 +128,7 @@ struct ast *newcall(struct symbol *s, struct ast *l)
 	a->nodetype = 'C';
 	a->l = l;
 	a->s = s;
-	return (struct ast *a);
+	return (struct ast *)a;
 }
 
 struct ast *newref(struct symbol *s)
@@ -142,7 +142,7 @@ struct ast *newref(struct symbol *s)
 	}
 	a->nodetype = 'N';
 	a->s = s;
-	return (struct ast *a);
+	return (struct ast *)a;
 }
 
 struct ast *newasgn(struct symbol *s, struct ast *v)
@@ -157,7 +157,7 @@ struct ast *newasgn(struct symbol *s, struct ast *v)
 	a->nodetype = '=';
 	a->s = s;
 	a->v = v;
-	return (struct ast *a);
+	return (struct ast *)a;
 }
 
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *el)
@@ -173,7 +173,7 @@ struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *
 	a->cond = cond;
 	a->tl = tl;
 	a->el = el;
-	return (struct ast *a);
+	return (struct ast *)a;
 }
 
 /* free a tree of ASTs */
@@ -261,7 +261,7 @@ double eval(struct ast *a)
 	switch(a->nodetype)
 	{
 			/*constant */
-		case 'K': v = ((Struct numval *)a)->number; break;
+		case 'K': v = ((struct numval *)a)->number; break;
 
 			/* name reference */
 		case 'N': v = ((struct symref *)a)->s->value; break;
@@ -275,7 +275,7 @@ double eval(struct ast *a)
 		case '*': v = eval(a->l) * eval(a->r); break;
 		case '/': v = eval(a->l) / eval(a->r); break;
 		case '|': v = fabs(eval(a->l)); break;
-		case 'M': v = -eval(a->l);; break;
+		case 'M': v = -eval(a->l); break;
 
 			/* comparisons */
 		case '1': v = (eval(a->l) >  eval(a->r)) ? 1 : 0; break;
@@ -324,8 +324,8 @@ double eval(struct ast *a)
 				{
 					v = eval(((struct flow *)a)->tl);
 				}
-				break;		/* value of last statement is value of while/do */
 			}
+			break;		/* value of last statement is value of while/do */
 
 		/*list of statements */
 		case 'L': eval(a->l); v = eval(a->r); break;
@@ -417,6 +417,17 @@ static double calluser(struct ufncall *f)
 		}
 	}
 
+	/* save old values of dummies, assign new ones */
+	sl = fn->syms;
+	for(i = 0; i < nargs; i++)
+	{
+		struct symbol *s = sl->sym;
+
+		oldval[i] = s->value;
+		s->value = newval[i];
+		sl = sl->next;
+	}
+
 	free(newval);
 
 	/* evaluate the function */
@@ -434,5 +445,21 @@ static double calluser(struct ufncall *f)
 
 	free(oldval);
 	return v;
+}
+
+void yyerror(char *s, ...)
+{
+	va_list ap;
+	va_start(ap, s);
+
+	fprintf(stderr, "%d: error: ", yylineno);
+	vfprintf(stderr, s, ap); /* recode something(=ap) to stream(=stderr), and it works such like fprintf() :) */
+	fprintf(stderr, "\n");
+}
+
+int main()
+{
+	printf("> ");
+	return yyparse();
 }
 

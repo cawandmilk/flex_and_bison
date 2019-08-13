@@ -22,7 +22,7 @@ struct symbol symtab[NHASH];
 struct symbol *lookup(char *);
 
 /*list of ymbols, for an argument list */
-stryct symlist
+struct symlist
 {
 	struct symbol *sym;
 	struct symlist *next;
@@ -58,7 +58,7 @@ enum bifs
 
 struct ast
 {
-	in nodetype;
+	int nodetype;
 	struct ast *l;
 	struct ast *r;
 };
@@ -74,7 +74,7 @@ struct ufncall
 {
 	int nodetype;			/* user function */
 	struct ast *l;			/* type C */
-	struct symbol *s;		/* list of argments */
+	struct symbol *s;		/* list of arguments */
 };
 
 struct flow
@@ -82,7 +82,7 @@ struct flow
 	int nodetype;			/* type I or W */
 	struct ast *cond;		/* condition */
 	struct ast *tl;			/* then branch or do list */
-	struct ast el;			/* optional else branch */
+	struct ast *el;			/* optional else branch */
 };
 
 struct numval
@@ -115,7 +115,7 @@ struct ast *newnum(double d);
 struct ast *newflow(int nodeytpe, struct ast *cond, struct ast *tl, struct ast *tr);
 
 /* define a function */
-void dodef(struct symbol *name, struct symlist *syms, struct ast *stems);
+void dodef(struct symbol *name, struct symlist *syms, struct ast *stmts);
 
 /* evaluate an AST */
 double eval(struct ast *);

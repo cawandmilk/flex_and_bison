@@ -30,14 +30,14 @@
 %nonassoc '|' UMINUS
 
 %type <a> exp stmt list explist
-%type <sl> sylist
+%type <sl> symlist
 
 %start calclist
 
 %%
 
 stmt: IF exp THEN list			{ $$ = newflow('I', $2, $4, NULL); }
- | IF exp THEN list ELSE LIST	{ $$ = newflow('I', $2, $4, $6); }
+ | IF exp THEN list ELSE list	{ $$ = newflow('I', $2, $4, $6); }
  | WHILE exp DO list			{ $$ = newflow('W', $2, $4, NULL); }
  | exp
  ;
